@@ -35,7 +35,7 @@
   },
   "scripts": {
     "configure": "node-gyp configure",
-    "build:native": "node-gyp build",
+    "build:native": "node-gyp configure && node-gyp build",
     "build:ts": "tsc -p tsconfig.json",
     "build": "npm run build:native && npm run build:ts",
     "rebuild": "node-gyp rebuild && npm run build:ts",
