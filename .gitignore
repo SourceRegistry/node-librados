@@ -1,0 +1,8 @@
+node_modules/
+build/
+package/
+coverage/*
+!coverage/api.json
+.cache/
+*.log
+.idea/

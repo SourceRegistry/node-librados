@@ -1,0 +1,50 @@
+{
+  "name": "node-librados",
+  "version": "0.0.0-development",
+  "description": "Production-grade Node.js bindings for Ceph librados and librbd",
+  "license": "Apache-2.0",
+  "author": "ProjectSource V.O.F.",
+  "homepage": "https://github.com/SourceRegistry/node-librados",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SourceRegistry/node-librados.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SourceRegistry/node-librados/issues"
+  },
+  "keywords": ["ceph", "rados", "rbd", "storage", "native", "napi"],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "require": "./lib/index.js"
+    }
+  },
+  "files": ["lib", "bin", "README.md", "LICENSE"],
+  "engines": {
+    "node": "^22.0.0 || ^24.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "node-addon-api": "^8.5.0",
+    "node-gyp": "^11.4.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "scripts": {
+    "configure": "node-gyp configure",
+    "build:native": "node-gyp build",
+    "build:ts": "tsc -p tsconfig.json",
+    "build": "npm run build:native && npm run build:ts",
+    "rebuild": "node-gyp rebuild && npm run build:ts",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test tests/**/*.test.ts",
+    "test:unit": "node --import tsx --test tests/unit/**/*.test.ts",
+    "test:integration": "node --import tsx --test tests/integration/**/*.test.ts",
+    "coverage:api": "node scripts/check-api-coverage.mjs",
+    "prepack": "npm run build:ts && node scripts/check-prebuilds.mjs"
+  },
+  "gypfile": false
+}

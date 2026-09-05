@@ -1,0 +1,9 @@
+{
+  "name": "node-librados (Squid)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {"CEPH_RELEASE": "squid", "NODE_MAJOR": "24"}
+  },
+  "remoteUser": "root",
+  "postCreateCommand": "npm ci && npm run build"
+}

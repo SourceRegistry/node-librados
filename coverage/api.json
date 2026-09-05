@@ -1,0 +1,31 @@
+{
+  "policy": "Every symbol used by the addon is listed here; deprecated aliases are intentionally excluded.",
+  "rados": [
+    "rados_version", "rados_create2", "rados_shutdown", "rados_connect", "rados_conf_read_file", "rados_conf_parse_env", "rados_conf_get", "rados_conf_set",
+    "rados_cluster_stat", "rados_cluster_fsid", "rados_wait_for_latest_osdmap", "rados_get_instance_id", "rados_pool_list", "rados_pool_lookup",
+    "rados_pool_reverse_lookup", "rados_pool_create", "rados_pool_delete", "rados_ioctx_create", "rados_ioctx_destroy", "rados_ioctx_get_id",
+    "rados_ioctx_set_namespace", "rados_ioctx_locator_set_key", "rados_ioctx_snap_set_read", "rados_get_last_version", "rados_ioctx_pool_requires_alignment2",
+    "rados_ioctx_pool_required_alignment2", "rados_write", "rados_write_full", "rados_append", "rados_read", "rados_remove", "rados_trunc", "rados_stat",
+    "rados_setxattr", "rados_getxattr", "rados_rmxattr", "rados_getxattrs", "rados_getxattrs_next", "rados_getxattrs_end", "rados_create_read_op",
+    "rados_read_op_omap_get_vals2", "rados_read_op_operate", "rados_omap_get_next2", "rados_omap_get_end", "rados_release_read_op",
+    "rados_create_write_op", "rados_write_op_omap_set2", "rados_write_op_omap_rm_keys2", "rados_write_op_operate", "rados_release_write_op",
+    "rados_nobjects_list_open", "rados_nobjects_list_next2", "rados_nobjects_list_close", "rados_notify2", "rados_notify_ack", "rados_watch3",
+    "rados_unwatch2", "rados_watch_flush", "rados_aio_flush", "rados_lock_exclusive", "rados_lock_shared", "rados_unlock", "rados_break_lock",
+    "rados_mon_command", "rados_mon_command_target", "rados_mgr_command", "rados_mgr_command_target", "rados_osd_command", "rados_pg_command",
+    "rados_buffer_free", "rados_ping_monitor", "rados_blocklist_add", "rados_service_register", "rados_service_update_status", "rados_monitor_log2"
+  ],
+  "rbd": [
+    "rbd_version", "rbd_list2", "rbd_image_spec_list_cleanup", "rbd_create2", "rbd_remove", "rbd_rename", "rbd_open", "rbd_open_read_only", "rbd_close",
+    "rbd_clone", "rbd_trash_move", "rbd_trash_restore", "rbd_trash_remove", "rbd_namespace_list", "rbd_namespace_create", "rbd_namespace_remove",
+    "rbd_pool_stats_create", "rbd_pool_stats_option_add_uint64", "rbd_pool_stats_get", "rbd_pool_stats_destroy", "rbd_stat", "rbd_get_size",
+    "rbd_resize2", "rbd_get_features", "rbd_get_flags", "rbd_read2", "rbd_write2", "rbd_discard", "rbd_flush", "rbd_invalidate_cache",
+    "rbd_snap_create", "rbd_snap_remove", "rbd_snap_list", "rbd_snap_list_end", "rbd_snap_set", "rbd_snap_protect", "rbd_snap_unprotect",
+    "rbd_snap_rollback", "rbd_flatten", "rbd_metadata_get", "rbd_metadata_set", "rbd_metadata_remove", "rbd_metadata_list", "rbd_lock_acquire",
+    "rbd_lock_release", "rbd_lock_break", "rbd_is_exclusive_lock_owner", "rbd_update_watch", "rbd_update_unwatch",
+    "rbd_image_options_create", "rbd_image_options_destroy", "rbd_migration_prepare", "rbd_migration_execute", "rbd_migration_commit", "rbd_migration_abort",
+    "rbd_mirror_mode_get", "rbd_mirror_mode_set", "rbd_group_create", "rbd_group_remove", "rbd_group_rename", "rbd_group_image_add", "rbd_group_image_remove",
+    "rbd_group_snap_create", "rbd_group_snap_remove", "rbd_group_snap_rollback", "rbd_mirror_image_enable2", "rbd_mirror_image_disable",
+    "rbd_mirror_image_promote", "rbd_mirror_image_demote", "rbd_mirror_image_resync", "rbd_mirror_image_create_snapshot", "rbd_sparsify",
+    "rbd_rebuild_object_map", "rbd_update_features", "rbd_encryption_format", "rbd_encryption_load"
+  ]
+}

@@ -1,0 +1,45 @@
+name: Ceph integration
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  microceph:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Node, Ceph Squid clients, and MicroCeph
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl gnupg g++ make python3
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://download.ceph.com/keys/release.asc | sudo gpg --dearmor -o /etc/apt/keyrings/ceph.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/ceph.gpg] https://download.ceph.com/debian-squid/ jammy main" | sudo tee /etc/apt/sources.list.d/ceph.list
+          curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+          sudo apt-get update
+          sudo apt-get install -y nodejs librados-dev librbd-dev
+          sudo snap install microceph --channel=squid/stable
+      - name: Bootstrap disposable cluster
+        run: |
+          sudo microceph cluster bootstrap
+          sudo microceph disk add loop,2G,3
+          sudo microceph waitready
+          sudo microceph.ceph config set mon mon_allow_pool_delete true
+          sudo microceph.ceph config generate-minimal-conf -o /tmp/node-librados-ceph.conf
+          sudo microceph.ceph auth get client.admin -o /tmp/node-librados-client.admin.keyring
+          sudo chmod 0644 /tmp/node-librados-ceph.conf /tmp/node-librados-client.admin.keyring
+          sudo microceph.ceph status
+      - run: npm ci
+      - run: npm run build
+      - name: Exercise RADOS, watch/notify, and RBD
+        env:
+          CEPH_INTEGRATION: "1"
+          CEPH_CONF: /tmp/node-librados-ceph.conf
+          CEPH_ARGS: --keyring=/tmp/node-librados-client.admin.keyring
+        run: npm run test:integration
