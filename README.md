@@ -1,5 +1,11 @@
 # node-librados
 
+[![npm version](https://img.shields.io/npm/v/node-librados.svg)](https://www.npmjs.com/package/node-librados)
+[![npm downloads](https://img.shields.io/npm/dm/node-librados.svg)](https://www.npmjs.com/package/node-librados)
+[![CI](https://github.com/SourceRegistry/node-librados/actions/workflows/ci.yml/badge.svg)](https://github.com/SourceRegistry/node-librados/actions/workflows/ci.yml)
+[![node](https://img.shields.io/node/v/node-librados.svg)](https://www.npmjs.com/package/node-librados)
+[![license](https://img.shields.io/npm/l/node-librados.svg)](LICENSE)
+
 Native Node.js bindings for Ceph's RADOS object store and RBD block-image APIs. The package is binary-safe, asynchronous, explicit about native resource lifetime, and event-driven wherever Ceph supplies callbacks.
 
 ## Requirements
