@@ -1,6 +1,6 @@
 {
   "name": "node-librados",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "Production-grade Node.js bindings for Ceph librados and librbd",
   "license": "Apache-2.0",
   "author": "ProjectSource V.O.F.",
@@ -12,7 +12,14 @@
   "bugs": {
     "url": "https://github.com/SourceRegistry/node-librados/issues"
   },
-  "keywords": ["ceph", "rados", "rbd", "storage", "native", "napi"],
+  "keywords": [
+    "ceph",
+    "rados",
+    "rbd",
+    "storage",
+    "native",
+    "napi"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
@@ -22,7 +29,12 @@
       "require": "./lib/index.js"
     }
   },
-  "files": ["lib", "bin", "README.md", "LICENSE"],
+  "files": [
+    "lib",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": "^22.0.0 || ^24.0.0"
   },
