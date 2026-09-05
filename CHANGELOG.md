@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/SourceRegistry/node-librados/compare/v1.0.0...v1.0.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* **LICENSE:** LICENSE ([98d288d](https://github.com/SourceRegistry/node-librados/commit/98d288d1b6247b8f6a5a36ad31870165043e2937))
+
 # 1.0.0 (2026-09-05)
 
 

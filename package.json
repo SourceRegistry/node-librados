@@ -1,6 +1,6 @@
 {
   "name": "node-librados",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Production-grade Node.js bindings for Ceph librados and librbd",
   "license": "Apache-2.0",
   "author": "ProjectSource V.O.F.",
