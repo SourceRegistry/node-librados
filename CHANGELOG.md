@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/SourceRegistry/node-librados/compare/v1.0.1...v1.0.2) (2026-09-06)
+
+
+### Bug Fixes
+
+* **ci:** write microceph config/keyring via tee, not snap -o path ([cb77ee4](https://github.com/SourceRegistry/node-librados/commit/cb77ee4da2034cbebc79b973c1c6260aa62188f4))
+
 ## [1.0.1](https://github.com/SourceRegistry/node-librados/compare/v1.0.0...v1.0.1) (2026-09-05)
 
 
