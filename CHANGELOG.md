@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/SourceRegistry/node-librados/compare/v1.0.2...v1.0.3) (2026-09-06)
+
+
+### Bug Fixes
+
+* **rbd:** trim null padding from rbd_metadata_get result ([1aae63e](https://github.com/SourceRegistry/node-librados/commit/1aae63eeab260fae80b513858a6c4e2db5ed6df8))
+
 ## [1.0.2](https://github.com/SourceRegistry/node-librados/compare/v1.0.1...v1.0.2) (2026-09-06)
 
 
