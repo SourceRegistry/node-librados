@@ -31,8 +31,8 @@ jobs:
           sudo microceph disk add loop,2G,3
           sudo microceph waitready
           sudo microceph.ceph config set mon mon_allow_pool_delete true
-          sudo microceph.ceph config generate-minimal-conf -o /tmp/node-librados-ceph.conf
-          sudo microceph.ceph auth get client.admin -o /tmp/node-librados-client.admin.keyring
+          sudo microceph.ceph config generate-minimal-conf | sudo tee /tmp/node-librados-ceph.conf > /dev/null
+          sudo microceph.ceph auth get client.admin | sudo tee /tmp/node-librados-client.admin.keyring > /dev/null
           sudo chmod 0644 /tmp/node-librados-ceph.conf /tmp/node-librados-client.admin.keyring
           sudo microceph.ceph status
       - run: npm ci
