@@ -57,6 +57,21 @@ An operation uses the namespace, locator key and read snapshot of its `IoContext
 
 Data is not copied on its way to or from Ceph. A `Buffer` passed to `write()`, `writeFull()`, `append()` or `RbdImage.write()` is used in place until the returned promise settles, so like with `fs.write()` it must not be changed before then. A read returns a `Buffer` over the memory librados read into.
 
+A compound write applies all of its steps to one object atomically, or none of them. Checks such as an exclusive create or an xattr comparison make it conditional:
+
+```ts
+await io.writeOp("payload")
+  .create({exclusive: true})
+  .writeFull(data)
+  .setXattr("checksum", checksum)
+  .operate();
+
+await io.writeOp("payload")
+  .compareXattr("state", "eq", Buffer.from("pending"))
+  .setXattr("state", Buffer.from("done"))
+  .operate();
+```
+
 Administrative commands are deliberately marked unsafe because their JSON schema and authorization are controlled by the connected Ceph release:
 
 ```ts

@@ -92,6 +92,28 @@ test("large writes and reads, and reads past the end", {skip: !enabled}, async (
   await io.remove("zero-copy");
 });
 
+test("compound write operations apply all steps or none", {skip: !enabled}, async () => {
+  await using io = cluster.ioContext(pool);
+  const failsWith = (errno: number) => (error: unknown) => error instanceof CephError && error.errno === errno;
+  await io.writeOp("op").create({exclusive: true}).writeFull(Buffer.from("first")).setXattr("state", Buffer.from("ready")).operate();
+  assert.equal((await io.read("op", 16n)).toString(), "first");
+  assert.equal((await io.getXattr("op", "state")).toString(), "ready");
+
+  await assert.rejects(io.writeOp("op").create({exclusive: true}).writeFull(Buffer.from("second")).operate(), failsWith(17));
+  await assert.rejects(io.writeOp("op").compareXattr("state", "eq", Buffer.from("other")).writeFull(Buffer.from("second")).removeXattr("state").operate(), failsWith(125));
+  assert.equal((await io.read("op", 16n)).toString(), "first");
+  assert.equal((await io.getXattr("op", "state")).toString(), "ready");
+
+  await io.writeOp("op").compareXattr("state", "eq", Buffer.from("ready")).writeFull(Buffer.from("second")).setXattr("state", Buffer.from("done")).operate();
+  assert.equal((await io.read("op", 16n)).toString(), "second");
+  assert.equal((await io.getXattr("op", "state")).toString(), "done");
+
+  await assert.rejects(io.writeOp("op-missing").assertExists().writeFull(Buffer.from("x")).operate(), failsWith(2));
+  await assert.rejects(io.stat("op-missing"), failsWith(2));
+  await io.writeOp("op").remove().operate();
+  await assert.rejects(io.stat("op"), failsWith(2));
+});
+
 test("RBD image, I/O, metadata, snapshots, resize, and trash", {skip: !enabled}, async () => {
   await using io = cluster.ioContext(pool);
   const rbd = io.rbd();
