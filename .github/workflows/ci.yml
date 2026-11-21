@@ -35,8 +35,60 @@ jobs:
           name: addon-${{ matrix.ceph }}-${{ matrix.arch }}
           path: build/Release/node-librados.node
 
+  integration:
+    # the integration suite against a disposable single-node cluster in the job container
+    strategy:
+      fail-fast: false
+      matrix:
+        ceph: [squid, tentacle]
+    runs-on: ubuntu-22.04
+    container:
+      image: ubuntu:22.04
+    timeout-minutes: 20
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Node, Ceph client libraries, monitor and OSD
+        run: |
+          apt-get update && apt-get install -y ca-certificates curl gnupg g++ make python3 uuid-runtime
+          mkdir -p /etc/apt/keyrings
+          curl -fsSL https://download.ceph.com/keys/release.asc | gpg --dearmor -o /etc/apt/keyrings/ceph.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/ceph.gpg] https://download.ceph.com/debian-${{ matrix.ceph }}/ jammy main" > /etc/apt/sources.list.d/ceph.list
+          curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+          apt-get update && apt-get install -y nodejs librados-dev librbd-dev ceph-common ceph-mon ceph-osd
+      - run: scripts/micro-ceph.sh
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:integration
+        env:
+          CEPH_INTEGRATION: "1"
+          CEPH_CONF: /tmp/node-librados-ceph/ceph.conf
+      - name: Cluster logs
+        if: failure()
+        run: tail -n 200 /tmp/node-librados-ceph/log/*.log
+
+  newest-compiler:
+    # the newest GCC catches missing standard library includes that older releases pull in indirectly
+    runs-on: ubuntu-24.04
+    container:
+      image: gcc:15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ceph client headers and Node-API headers
+        run: apt-get update && apt-get install -y librados-dev librbd-dev libnode-dev npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compile every source file with GCC 15
+        run: |
+          g++ --version | head -1
+          for source in src/*.cpp; do
+            g++ -std=c++17 -Wall -Wextra -Wpedantic -fsyntax-only \
+              -DNAPI_VERSION=9 -DNODE_ADDON_API_CPP_EXCEPTIONS_ALL \
+              -I/usr/include/node -Inode_modules/node-addon-api "$source"
+          done
+
   package:
-    needs: build
+    needs: [build, integration, newest-compiler]
     runs-on: ubuntu-22.04
     permissions:
       contents: write

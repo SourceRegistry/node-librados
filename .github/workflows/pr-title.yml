@@ -1,0 +1,24 @@
+name: PR title
+# Pull requests are squash merged, so the title becomes the commit message that semantic-release reads to
+# decide the next version. It must follow Conventional Commits.
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions: {}
+
+jobs:
+  conventional:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check the title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^(feat|fix|perf|refactor|docs|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: [^ ].*$'
+          if [[ "$TITLE" =~ $pattern ]]; then
+            echo "OK: $TITLE"
+          else
+            echo "::error::PR title must follow Conventional Commits, e.g. 'fix(rados): handle short reads' or 'feat(rbd): add image groups'. Got: $TITLE"
+            exit 1
+          fi

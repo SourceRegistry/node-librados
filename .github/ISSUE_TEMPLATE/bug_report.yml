@@ -1,0 +1,114 @@
+name: Bug report
+description: Something in node-librados behaves wrongly, fails, hangs or crashes the process
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. The fields below are what we need to reproduce and investigate
+        it; reports without a reproduction or versions usually stall until we get them.
+
+        **Security issues:** do not open a public issue. Use *Security → Report a vulnerability* on this repository.
+
+        **Before you paste:** remove keyrings, `key = ...` lines, monitor addresses and anything else you would
+        not publish.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: One or two sentences. What did you do, and what went wrong?
+      placeholder: "IoContext.read() resolves with an empty Buffer for an object that exists after setNamespace()"
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: |
+        Run this in the project that uses node-librados, on the machine where the problem happens, and paste the
+        output. `addon.rados` is the librados ABI version; the package line shows the actual Ceph client release.
+
+        ```sh
+        npm ls node-librados
+        dpkg -l librados2 librbd1 2>/dev/null | grep ^ii || rpm -q librados2 librbd1
+        node -e 'const l = require("node-librados"); console.log(JSON.stringify({node: process.version, platform: `${process.platform}-${process.arch}`, glibc: process.report.getReport().header.glibcVersionRuntime, addon: l.versions, capabilities: l.capabilities}, (_, v) => typeof v === "bigint" ? String(v) : v, 2))'
+        ```
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: cluster
+    attributes:
+      label: Ceph cluster version
+      description: Output of `ceph versions`, or the release name if you cannot run it (e.g. "19.2.3 squid")
+      placeholder: "19.2.3 squid, all daemons"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and installation
+      description: Distribution and version, container image if any, and where librados comes from (download.ceph.com, distro packages, ...)
+      placeholder: "Ubuntu 24.04 in docker, librados2 from download.ceph.com/debian-squid"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: |
+        The smallest script that shows the problem, ideally runnable against a fresh pool. Include the pool and
+        namespace setup it needs. If you cannot share code, describe the exact sequence of calls.
+      render: ts
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour and error output
+      description: |
+        Paste the complete error, including every field of a `CephError` (`code`, `errno`, `codeName`,
+        `operation`, `resource`) and the stack. If the process crashed, include the last lines of stderr
+        (for example `terminate called after ...`), the exit code or signal, and a core dump backtrace if you have one.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does it happen?
+      options:
+        - Every time
+        - Sometimes, under load or concurrency
+        - Once, cannot reproduce
+    validations:
+      required: true
+  - type: input
+    id: regression
+    attributes:
+      label: Last version that worked
+      description: If this worked in an earlier node-librados version, which one?
+  - type: textarea
+    id: context
+    attributes:
+      label: Cluster and client context
+      description: |
+        Anything about the setup that may matter: `ceph -s` health, pool type (replicated or erasure coded),
+        namespaces, the client's cephx capabilities (`ceph auth get client.<name>` without the key), RBD image
+        features, how many operations run at once.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched the existing issues and this is not a duplicate
+          required: true
+        - label: I removed keys, secrets and addresses I do not want to publish
+          required: true
