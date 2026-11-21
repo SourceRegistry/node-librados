@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/SourceRegistry/node-librados/compare/v1.0.3...v1.1.0) (2026-11-21)
+
+
+### Bug Fixes
+
+* **build:** include <stdexcept> for std::runtime_error ([#1](https://github.com/SourceRegistry/node-librados/issues/1)) ([0d44095](https://github.com/SourceRegistry/node-librados/commit/0d4409513d258608a3cab739cf07c95db4a5d06f))
+* **rados:** refuse io context setting changes while operations are in flight ([#2](https://github.com/SourceRegistry/node-librados/issues/2)) ([dd3f83b](https://github.com/SourceRegistry/node-librados/commit/dd3f83b59c3741a1a7bcc54c97f6da892a6736fd))
+
+
+### Features
+
+* name the errno of a CephError in codeName ([#5](https://github.com/SourceRegistry/node-librados/issues/5)) ([ff3568d](https://github.com/SourceRegistry/node-librados/commit/ff3568d7c2e499bec6ffee7e0e0eb9128ad1d70f))
+
 ## [1.0.3](https://github.com/SourceRegistry/node-librados/compare/v1.0.2...v1.0.3) (2026-09-06)
 
 
