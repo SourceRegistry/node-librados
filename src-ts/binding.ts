@@ -1,4 +1,5 @@
 import path from "node:path";
+import {addonLoadError} from "./load-error";
 
 const triplets: Partial<Record<NodeJS.Architecture, string>> = {
   x64: "x86_64-linux-gnu",
@@ -20,9 +21,5 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   module.exports = require(addonPath);
 } catch (cause) {
-  const error = cause as NodeJS.ErrnoException;
-  if (error.message?.includes("librados") || error.message?.includes("librbd")) {
-    throw new Error("Unable to load Ceph client libraries. Install librados2 and librbd1 from Ceph Squid or Tentacle.", {cause});
-  }
-  throw cause;
+  throw addonLoadError(cause, addonPath, inPackage);
 }
