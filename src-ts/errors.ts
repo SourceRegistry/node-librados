@@ -23,7 +23,8 @@ export class CephError extends Error {
   }
 
   static normalize(error: unknown): CephError {
-    if (error instanceof CephError) return error;
+    // instanceof also matches error-like objects (see hasInstance), which still have to be turned into a CephError
+    if (error instanceof Error && CephError.prototype.isPrototypeOf(error)) return error as CephError;
     if (error && typeof error === "object" && "code" in error && "operation" in error) {
       const value = error as Error & {code: number; errno?: number; codeName?: string; operation: string; resource?: string};
       return new CephError(value.message, {code: value.code, errno: value.errno ?? Math.abs(value.code), codeName: value.codeName, operation: value.operation, resource: value.resource, cause: error});

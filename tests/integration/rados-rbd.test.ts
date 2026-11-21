@@ -140,6 +140,17 @@ test("compound write checks compare the stored value and the version", {skip: !e
   await io.remove("checked");
 });
 
+test("a read of 0 bytes returns an empty Buffer, or ENOENT for a missing object", {skip: !enabled}, async () => {
+  await using io = cluster.ioContext(pool);
+  await io.writeFull("zero-length", Buffer.from("data"));
+  const empty = await io.read("zero-length", 0n);
+  assert.ok(Buffer.isBuffer(empty));
+  assert.equal(empty.length, 0);
+  assert.equal((await io.read("zero-length", 0n, 2n)).length, 0);
+  await assert.rejects(io.read("zero-length-missing", 0n), (error: unknown) => error instanceof CephError && error.errno === 2);
+  await io.remove("zero-length");
+});
+
 test("RBD image, I/O, metadata, snapshots, resize, and trash", {skip: !enabled}, async () => {
   await using io = cluster.ioContext(pool);
   const rbd = io.rbd();

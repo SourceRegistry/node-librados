@@ -258,7 +258,17 @@ Napi::Value IoContextWrap::Append(const Napi::CallbackInfo& info) {
 }
 Napi::Value IoContextWrap::Read(const Napi::CallbackInfo& info) {
   auto oid = string_arg(info, 0, "oid"); size_t length = static_cast<size_t>(uint64_arg(info[1], "length")); uint64_t offset = uint64_arg(info[2], "offset"); auto state = in_flight(state_);
-  return async_value<ReadBytes>(info.Env(), "rados_read", oid, [state, oid, length, offset](ReadBytes& out) { char* buffer = out.allocate(length); int rc = state->use([&](rados_ioctx_t h) { return rados_read(h, oid.c_str(), buffer, length, offset); }); if (rc >= 0) out.size = static_cast<size_t>(rc); return rc < 0 ? rc : 0; }, [](Napi::Env env, ReadBytes& out) { return out.to_buffer(env); });
+  return async_value<ReadBytes>(info.Env(), "rados_read", oid, [state, oid, length, offset](ReadBytes& out) {
+    char* buffer = out.allocate(length);
+    int rc = state->use([&](rados_ioctx_t h) {
+      // the OSD reads to the end of the object for a length of 0, which does not fit the empty buffer, so a read
+      // of 0 bytes only checks that the object exists
+      if (!length) { uint64_t size = 0; time_t modified = 0; return rados_stat(h, oid.c_str(), &size, &modified); }
+      return rados_read(h, oid.c_str(), buffer, length, offset);
+    });
+    if (rc >= 0) out.size = length ? static_cast<size_t>(rc) : 0;
+    return rc < 0 ? rc : 0;
+  }, [](Napi::Env env, ReadBytes& out) { return out.to_buffer(env); });
 }
 Napi::Value IoContextWrap::Remove(const Napi::CallbackInfo& info) {
   auto oid = string_arg(info, 0, "oid"); auto state = in_flight(state_); return async_void(info.Env(), "rados_remove", oid, [state, oid] { return state->use([&](rados_ioctx_t h) { return rados_remove(h, oid.c_str()); }); });
