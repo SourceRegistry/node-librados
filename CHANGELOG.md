@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/SourceRegistry/node-librados/compare/v1.2.2...v1.2.3) (2026-11-21)
+
+
+### Bug Fixes
+
+* explain why the native addon failed to load ([#14](https://github.com/SourceRegistry/node-librados/issues/14)) ([e80d2f3](https://github.com/SourceRegistry/node-librados/commit/e80d2f3fd2a12cd1b5a755ac25caaae0f46d6758))
+
 ## [1.2.2](https://github.com/SourceRegistry/node-librados/compare/v1.2.1...v1.2.2) (2026-11-21)
 
 
