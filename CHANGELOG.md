@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/SourceRegistry/node-librados/compare/v1.1.0...v1.1.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* **rados:** list objects a page at a time ([#6](https://github.com/SourceRegistry/node-librados/issues/6)) ([61d68c9](https://github.com/SourceRegistry/node-librados/commit/61d68c9ae78f311ca3dd39803a94c4f65f70ac2b))
+
 # [1.1.0](https://github.com/SourceRegistry/node-librados/compare/v1.0.3...v1.1.0) (2026-11-21)
 
 
