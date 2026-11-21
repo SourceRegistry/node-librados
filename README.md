@@ -55,6 +55,8 @@ for await (const object of io.objects()) {
 
 An operation uses the namespace, locator key and read snapshot of its `IoContext` when it runs on the libuv thread pool, not when it is called. `setNamespace()`, `setLocatorKey()` and `setReadSnapshot()` therefore throw a `CephError` with `errno` 16 (`EBUSY`) while operations are in flight, a watch is registered or an `objects()` listing is open on the `IoContext`. Use one `IoContext` per namespace when they are used at the same time.
 
+Data is not copied on its way to or from Ceph. A `Buffer` passed to `write()`, `writeFull()`, `append()` or `RbdImage.write()` is used in place until the returned promise settles, so like with `fs.write()` it must not be changed before then. A read returns a `Buffer` over the memory librados read into.
+
 Administrative commands are deliberately marked unsafe because their JSON schema and authorization are controlled by the connected Ceph release:
 
 ```ts
