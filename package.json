@@ -39,18 +39,18 @@
     "node": "^22.0.0 || ^24.0.0"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^11.0.1",
-    "@semantic-release/npm": "^13.0.0",
+    "@semantic-release/git": "^11.0.1",
+    "@semantic-release/github": "^12.0.11",
+    "@semantic-release/npm": "^13.2.0",
     "@semantic-release/release-notes-generator": "^14.0.3",
-    "@types/node": "^24.0.0",
+    "@types/node": "^24.19.2",
     "node-addon-api": "^8.5.0",
-    "node-gyp": "^11.4.2",
+    "node-gyp": "^13.1.0",
     "semantic-release": "^25.0.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2"
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
   },
   "scripts": {
     "configure": "node-gyp configure",
