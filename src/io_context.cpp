@@ -55,9 +55,11 @@ std::vector<WriteStep> write_steps(const Napi::Value& value) {
       {"create", WriteStep::Create}, {"write", WriteStep::Write}, {"writeFull", WriteStep::WriteFull}, {"append", WriteStep::Append},
       {"truncate", WriteStep::Truncate}, {"zero", WriteStep::Zero}, {"remove", WriteStep::Remove}, {"setXattr", WriteStep::SetXattr},
       {"removeXattr", WriteStep::RemoveXattr}, {"setOmap", WriteStep::SetOmap}, {"removeOmapKeys", WriteStep::RemoveOmapKeys}};
+  // compareXattr(name, "gt", value) passes when the stored xattr is greater than value. The OSD evaluates
+  // "value OP stored", so the ordering operators are mirrored here
   static const std::map<std::string, int> comparisons = {
-      {"eq", LIBRADOS_CMPXATTR_OP_EQ}, {"ne", LIBRADOS_CMPXATTR_OP_NE}, {"gt", LIBRADOS_CMPXATTR_OP_GT},
-      {"gte", LIBRADOS_CMPXATTR_OP_GTE}, {"lt", LIBRADOS_CMPXATTR_OP_LT}, {"lte", LIBRADOS_CMPXATTR_OP_LTE}};
+      {"eq", LIBRADOS_CMPXATTR_OP_EQ}, {"ne", LIBRADOS_CMPXATTR_OP_NE}, {"gt", LIBRADOS_CMPXATTR_OP_LT},
+      {"gte", LIBRADOS_CMPXATTR_OP_LTE}, {"lt", LIBRADOS_CMPXATTR_OP_GT}, {"lte", LIBRADOS_CMPXATTR_OP_GTE}};
   auto array = value.As<Napi::Array>();
   std::vector<WriteStep> steps;
   for (uint32_t i = 0; i < array.Length(); ++i) {
@@ -300,7 +302,7 @@ Napi::Value IoContextWrap::RemoveOmapKeys(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value IoContextWrap::WriteOp(const Napi::CallbackInfo& info) {
-  auto oid = string_arg(info, 0, "oid"); auto steps = write_steps(info[1]); auto state = state_;
+  auto oid = string_arg(info, 0, "oid"); auto steps = write_steps(info[1]); auto state = in_flight(state_);
   return async_void(info.Env(), "rados_write_op_operate", oid, [state, oid, steps] {
     return state->use([&](rados_ioctx_t h) {
       rados_write_op_t op = rados_create_write_op();

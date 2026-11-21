@@ -128,13 +128,15 @@ export class IoContext {
 /**
  * Steps applied to one object atomically by a single OSD operation: every step takes effect, or none does.
  * A failed check fails the whole operation before anything is written: assertExists() with ENOENT,
- * assertVersion() with ERANGE, compareXattr() with ECANCELED, and create({exclusive: true}) with EEXIST
+ * assertVersion() with ERANGE when the object is newer and EOVERFLOW when it is older, compareXattr() with
+ * ECANCELED, and create({exclusive: true}) with EEXIST
  */
 export class WriteOperation {
   readonly #steps: WriteStep[] = [];
   constructor(private readonly run: (steps: WriteStep[]) => Promise<void>) {}
   assertExists() { this.#steps.push({type: "assertExists"}); return this; }
   assertVersion(version: bigint) { this.#steps.push({type: "assertVersion", version}); return this; }
+  /** Passes when the stored xattr compares to value as given, e.g. "gt" when it is greater. Values compare as strings */
   compareXattr(name: string, comparison: XattrComparison, value: Buffer) { this.#steps.push({type: "compareXattr", name, comparison, value}); return this; }
   create(options: {exclusive?: boolean} = {}) { this.#steps.push({type: "create", exclusive: options.exclusive ?? true}); return this; }
   write(data: Buffer, offset = 0n) { this.#steps.push({type: "write", data, offset}); return this; }

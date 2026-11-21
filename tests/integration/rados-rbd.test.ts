@@ -114,6 +114,32 @@ test("compound write operations apply all steps or none", {skip: !enabled}, asyn
   await assert.rejects(io.stat("op"), failsWith(2));
 });
 
+test("compound write checks compare the stored value and the version", {skip: !enabled}, async () => {
+  await using io = cluster.ioContext(pool);
+  const failsWith = (errno: number) => (error: unknown) => error instanceof CephError && error.errno === errno;
+  await io.writeFull("checked", Buffer.from("x"));
+  await io.setXattr("checked", "v", Buffer.from("m"));
+  for (const [comparison, value, passes] of [
+    ["eq", "m", true], ["ne", "m", false], ["gt", "a", true], ["gt", "z", false], ["gte", "m", true],
+    ["lt", "z", true], ["lt", "a", false], ["lte", "m", true],
+  ] as const) {
+    const op = io.writeOp("checked").compareXattr("v", comparison, Buffer.from(value)).operate();
+    if (passes) await op; else await assert.rejects(op, failsWith(125), `${comparison} ${value}`);
+  }
+
+  await io.writeFull("checked", Buffer.from("v1"));
+  const version = io.lastVersion;
+  await assert.rejects(io.writeOp("checked").assertVersion(version + 1n).writeFull(Buffer.from("v2")).operate(), failsWith(75));
+  await io.writeOp("checked").assertVersion(version).writeFull(Buffer.from("v2")).operate();
+  await assert.rejects(io.writeOp("checked").assertVersion(version).writeFull(Buffer.from("v3")).operate(), failsWith(34));
+  assert.equal((await io.read("checked", 16n)).toString(), "v2");
+
+  const ops = Array.from({length: 8}, () => io.writeOp("checked").append(Buffer.from("!")).operate());
+  assert.throws(() => io.setNamespace("elsewhere"), failsWith(16));
+  await Promise.all(ops);
+  await io.remove("checked");
+});
+
 test("RBD image, I/O, metadata, snapshots, resize, and trash", {skip: !enabled}, async () => {
   await using io = cluster.ioContext(pool);
   const rbd = io.rbd();
