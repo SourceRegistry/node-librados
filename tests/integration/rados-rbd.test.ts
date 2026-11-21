@@ -72,6 +72,13 @@ test("lists objects a page at a time", {skip: !enabled}, async () => {
   assert.deepEqual(listed.sort(), [...names].sort());
   // leaving a listing early closes it, or closing the io context below would fail with EBUSY
   for await (const object of io.objects({pageSize: 2})) { assert.ok(object.name); break; }
+  // an open listing reads the namespace when it reads its first page, so the namespace may not change under it
+  const busy = (error: unknown) => error instanceof CephError && error.errno === 16;
+  const listing = io.objects({pageSize: 2});
+  await listing.next();
+  assert.throws(() => io.setNamespace("elsewhere"), busy);
+  await listing.return(undefined);
+  io.setNamespace("");
   for (const name of names) await io.remove(name);
 });
 

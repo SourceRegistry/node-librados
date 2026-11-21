@@ -226,6 +226,7 @@ struct ObjectListWrap::Data {
     if (list) rados_nobjects_list_close(list);
     list = nullptr;
     io->remove_child();
+    io->end_op();
     return 0;
   }
 };
@@ -245,8 +246,10 @@ Napi::Object ObjectListWrap::Create(Napi::Env env, std::shared_ptr<IoState> io, 
   auto data = std::make_shared<Data>();
   data->io = std::move(io);
   data->pool = std::move(pool);
-  // the io context may not be destroyed under an open listing
+  // the io context may not be destroyed under an open listing, and the listing reads the namespace when its
+  // first page is read, so the namespace may not change while it is open either
   data->io->add_child();
+  data->io->begin_op();
   auto* holder = new std::shared_ptr<Data>(std::move(data));
   return constructor.New({Napi::External<std::shared_ptr<Data>>::New(env, holder)});
 }
