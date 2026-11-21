@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/SourceRegistry/node-librados/compare/v1.1.2...v1.2.0) (2026-11-21)
+
+
+### Features
+
+* **rados:** compound write operations ([#4](https://github.com/SourceRegistry/node-librados/issues/4)) ([e16926b](https://github.com/SourceRegistry/node-librados/commit/e16926b454be2bd5125e21870464586823f3ca4a))
+
 ## [1.1.2](https://github.com/SourceRegistry/node-librados/compare/v1.1.1...v1.1.2) (2026-11-21)
 
 
