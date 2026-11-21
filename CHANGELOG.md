@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/SourceRegistry/node-librados/compare/v1.2.0...v1.2.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* **native:** throw instead of aborting on calls to a closed handle ([#10](https://github.com/SourceRegistry/node-librados/issues/10)) ([0ac40c9](https://github.com/SourceRegistry/node-librados/commit/0ac40c9f2db315abaceb8ac70081da3b84544a9e)), closes [#7](https://github.com/SourceRegistry/node-librados/issues/7)
+
 # [1.2.0](https://github.com/SourceRegistry/node-librados/compare/v1.1.2...v1.2.0) (2026-11-21)
 
 
