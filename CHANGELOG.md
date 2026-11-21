@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/SourceRegistry/node-librados/compare/v1.2.1...v1.2.2) (2026-11-21)
+
+
+### Bug Fixes
+
+* empty Buffer for 0-byte reads, real CephError from normalize() ([#13](https://github.com/SourceRegistry/node-librados/issues/13)) ([c1895fb](https://github.com/SourceRegistry/node-librados/commit/c1895fb7922395d7be944c1ef1ed70f1e18eca1b)), closes [#8](https://github.com/SourceRegistry/node-librados/issues/8) [#9](https://github.com/SourceRegistry/node-librados/issues/9)
+
 ## [1.2.1](https://github.com/SourceRegistry/node-librados/compare/v1.2.0...v1.2.1) (2026-11-21)
 
 
