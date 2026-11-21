@@ -92,6 +92,54 @@ test("large writes and reads, and reads past the end", {skip: !enabled}, async (
   await io.remove("zero-copy");
 });
 
+test("compound write operations apply all steps or none", {skip: !enabled}, async () => {
+  await using io = cluster.ioContext(pool);
+  const failsWith = (errno: number) => (error: unknown) => error instanceof CephError && error.errno === errno;
+  await io.writeOp("op").create({exclusive: true}).writeFull(Buffer.from("first")).setXattr("state", Buffer.from("ready")).operate();
+  assert.equal((await io.read("op", 16n)).toString(), "first");
+  assert.equal((await io.getXattr("op", "state")).toString(), "ready");
+
+  await assert.rejects(io.writeOp("op").create({exclusive: true}).writeFull(Buffer.from("second")).operate(), failsWith(17));
+  await assert.rejects(io.writeOp("op").compareXattr("state", "eq", Buffer.from("other")).writeFull(Buffer.from("second")).removeXattr("state").operate(), failsWith(125));
+  assert.equal((await io.read("op", 16n)).toString(), "first");
+  assert.equal((await io.getXattr("op", "state")).toString(), "ready");
+
+  await io.writeOp("op").compareXattr("state", "eq", Buffer.from("ready")).writeFull(Buffer.from("second")).setXattr("state", Buffer.from("done")).operate();
+  assert.equal((await io.read("op", 16n)).toString(), "second");
+  assert.equal((await io.getXattr("op", "state")).toString(), "done");
+
+  await assert.rejects(io.writeOp("op-missing").assertExists().writeFull(Buffer.from("x")).operate(), failsWith(2));
+  await assert.rejects(io.stat("op-missing"), failsWith(2));
+  await io.writeOp("op").remove().operate();
+  await assert.rejects(io.stat("op"), failsWith(2));
+});
+
+test("compound write checks compare the stored value and the version", {skip: !enabled}, async () => {
+  await using io = cluster.ioContext(pool);
+  const failsWith = (errno: number) => (error: unknown) => error instanceof CephError && error.errno === errno;
+  await io.writeFull("checked", Buffer.from("x"));
+  await io.setXattr("checked", "v", Buffer.from("m"));
+  for (const [comparison, value, passes] of [
+    ["eq", "m", true], ["ne", "m", false], ["gt", "a", true], ["gt", "z", false], ["gte", "m", true],
+    ["lt", "z", true], ["lt", "a", false], ["lte", "m", true],
+  ] as const) {
+    const op = io.writeOp("checked").compareXattr("v", comparison, Buffer.from(value)).operate();
+    if (passes) await op; else await assert.rejects(op, failsWith(125), `${comparison} ${value}`);
+  }
+
+  await io.writeFull("checked", Buffer.from("v1"));
+  const version = io.lastVersion;
+  await assert.rejects(io.writeOp("checked").assertVersion(version + 1n).writeFull(Buffer.from("v2")).operate(), failsWith(75));
+  await io.writeOp("checked").assertVersion(version).writeFull(Buffer.from("v2")).operate();
+  await assert.rejects(io.writeOp("checked").assertVersion(version).writeFull(Buffer.from("v3")).operate(), failsWith(34));
+  assert.equal((await io.read("checked", 16n)).toString(), "v2");
+
+  const ops = Array.from({length: 8}, () => io.writeOp("checked").append(Buffer.from("!")).operate());
+  assert.throws(() => io.setNamespace("elsewhere"), failsWith(16));
+  await Promise.all(ops);
+  await io.remove("checked");
+});
+
 test("RBD image, I/O, metadata, snapshots, resize, and trash", {skip: !enabled}, async () => {
   await using io = cluster.ioContext(pool);
   const rbd = io.rbd();
