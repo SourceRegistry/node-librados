@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/SourceRegistry/node-librados/compare/v1.1.1...v1.1.2) (2026-11-21)
+
+
+### Performance Improvements
+
+* write and read object data without copying it on the main thread ([#3](https://github.com/SourceRegistry/node-librados/issues/3)) ([729de71](https://github.com/SourceRegistry/node-librados/commit/729de71f88eee93bf6c5b0be508a38ba2f8957b6))
+
 ## [1.1.1](https://github.com/SourceRegistry/node-librados/compare/v1.1.0...v1.1.1) (2026-11-21)
 
 
