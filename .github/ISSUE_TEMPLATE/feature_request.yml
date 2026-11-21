@@ -1,0 +1,36 @@
+name: Feature request
+description: Bind a librados or librbd API that is missing, or change how an existing one is exposed
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The use case, not the solution. What can you not do today, or only with a workaround?
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API
+      description: How you would like to call it from TypeScript.
+      render: ts
+  - type: input
+    id: symbols
+    attributes:
+      label: librados / librbd functions involved
+      description: The C functions this would bind, if you know them (e.g. `rados_write_op_cmpext`)
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you like to implement it?
+      options:
+        - "Yes, I would like to open a pull request"
+        - "Maybe, with some guidance"
+        - "No"
+    validations:
+      required: true

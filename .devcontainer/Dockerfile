@@ -3,6 +3,8 @@ FROM mcr.microsoft.com/devcontainers/cpp:1-ubuntu-22.04
 ARG CEPH_RELEASE=squid
 ARG NODE_MAJOR=24
 
+# Ceph client libraries to build against, and a monitor and OSD for the disposable test cluster that
+# scripts/micro-ceph.sh starts
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y --no-install-recommends ca-certificates curl gnupg lsb-release \
     && mkdir -p /etc/apt/keyrings \
@@ -10,5 +12,5 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && echo "deb [signed-by=/etc/apt/keyrings/ceph.gpg] https://download.ceph.com/debian-${CEPH_RELEASE}/ jammy main" > /etc/apt/sources.list.d/ceph.list \
     && curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - \
     && apt-get update && apt-get install -y --no-install-recommends \
-       nodejs librados-dev librbd-dev ceph-common pkg-config \
+       nodejs librados-dev librbd-dev ceph-common ceph-mon ceph-osd pkg-config uuid-runtime \
     && rm -rf /var/lib/apt/lists/*

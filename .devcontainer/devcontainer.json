@@ -5,5 +5,10 @@
     "args": {"CEPH_RELEASE": "squid", "NODE_MAJOR": "24"}
   },
   "remoteUser": "root",
-  "postCreateCommand": "npm ci && npm run build"
+  "containerEnv": {
+    "CEPH_INTEGRATION": "1",
+    "CEPH_CONF": "/tmp/node-librados-ceph/ceph.conf"
+  },
+  "postCreateCommand": "npm ci && npm run build",
+  "postStartCommand": "scripts/micro-ceph.sh"
 }

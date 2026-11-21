@@ -136,15 +136,15 @@ await rbd.remove("old-image", {confirm: "old-image"});
 
 ## Development
 
-Open the included devcontainer, then run:
+Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). The quickest way to build and run every test,
+including the integration suite against a throwaway Ceph cluster, is the included devcontainer or, from any host
+with Docker:
 
 ```sh
-npm ci
-npm run build
-npm test
+npm run test:docker
 ```
 
-Integration tests use an explicitly configured disposable Ceph cluster:
+To run the integration suite against a disposable cluster of your own:
 
 ```sh
 CEPH_INTEGRATION=1 \
@@ -154,6 +154,8 @@ npm run test:integration
 ```
 
 The integration suite creates and deletes a uniquely named pool. Never point it at a cluster where the configured identity should not have pool-management permissions.
+
+Found a bug? Please use the [bug report form](https://github.com/SourceRegistry/node-librados/issues/new?template=bug_report.yml); it asks for everything needed to reproduce it.
 
 ## Deliberate boundaries
 
