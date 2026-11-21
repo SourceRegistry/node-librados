@@ -62,6 +62,26 @@ test("io context settings do not change under operations in flight", {skip: !ena
   await io.remove("busy");
 });
 
+test("lists objects a page at a time", {skip: !enabled}, async () => {
+  await using io = cluster.ioContext(pool);
+  const prefix = "stream-objects";
+  const names = Array.from({length: 25}, (_, i) => `${prefix}-${i}`);
+  for (const name of names) await io.writeFull(name, Buffer.from(name));
+  const listed: string[] = [];
+  for await (const object of io.objects({pageSize: 4})) if (object.name.startsWith(prefix)) listed.push(object.name);
+  assert.deepEqual(listed.sort(), [...names].sort());
+  // leaving a listing early closes it, or closing the io context below would fail with EBUSY
+  for await (const object of io.objects({pageSize: 2})) { assert.ok(object.name); break; }
+  // an open listing reads the namespace when it reads its first page, so the namespace may not change under it
+  const busy = (error: unknown) => error instanceof CephError && error.errno === 16;
+  const listing = io.objects({pageSize: 2});
+  await listing.next();
+  assert.throws(() => io.setNamespace("elsewhere"), busy);
+  await listing.return(undefined);
+  io.setNamespace("");
+  for (const name of names) await io.remove(name);
+});
+
 test("RBD image, I/O, metadata, snapshots, resize, and trash", {skip: !enabled}, async () => {
   await using io = cluster.ioContext(pool);
   const rbd = io.rbd();
