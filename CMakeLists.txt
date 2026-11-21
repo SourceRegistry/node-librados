@@ -16,6 +16,6 @@ target_include_directories(node-librados PRIVATE
   "${NODE_ADDON_API_DIR}"
   "${NODE_API_INCLUDE_DIR}"
   "${CMAKE_SOURCE_DIR}/src")
-target_compile_definitions(node-librados PRIVATE NAPI_VERSION=9)
+target_compile_definitions(node-librados PRIVATE NAPI_VERSION=9 NODE_ADDON_API_CPP_EXCEPTIONS_ALL)
 target_compile_options(node-librados PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries(node-librados PRIVATE rados rbd dl)

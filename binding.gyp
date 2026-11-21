@@ -12,7 +12,7 @@
       "include_dirs": ["<!@(node -p \"require('node-addon-api').include\")"],
       "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],
       "libraries": ["-lrados", "-lrbd", "-ldl"],
-      "defines": ["NAPI_VERSION=9"],
+      "defines": ["NAPI_VERSION=9", "NODE_ADDON_API_CPP_EXCEPTIONS_ALL"],
       "cflags_cc": ["-std=c++17", "-Wall", "-Wextra", "-Wpedantic"],
       "cflags!": ["-fno-exceptions"],
       "cflags_cc!": ["-fno-exceptions"]

@@ -155,3 +155,24 @@ test("RBD image, I/O, metadata, snapshots, resize, and trash", {skip: !enabled},
   await image.close();
   await rbd.moveToTrash("image");
 });
+
+test("synchronous calls on closed handles throw instead of aborting the process", {skip: !enabled}, async () => {
+  const closedError = (error: unknown) => error instanceof Error && error.message === "resource is closed";
+  const io = cluster.ioContext(pool);
+  await io.close();
+  assert.throws(() => io.setNamespace("x"), closedError);
+  assert.throws(() => io.setLocatorKey("x"), closedError);
+  assert.throws(() => io.setReadSnapshot(1n), closedError);
+  assert.throws(() => io.poolId, closedError);
+  assert.throws(() => io.lastVersion, closedError);
+
+  const closed = await Cluster.connect({
+    clusterName: process.env.CEPH_CLUSTER ?? "ceph",
+    userName: process.env.CEPH_CLIENT ?? "client.admin",
+    configFile: process.env.CEPH_CONF ?? null,
+  });
+  await closed.close();
+  assert.throws(() => closed.config("mon_host"), closedError);
+  assert.throws(() => closed.instanceId, closedError);
+  assert.throws(() => closed.ioContext(pool), closedError);
+});
